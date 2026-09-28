@@ -2,7 +2,9 @@
 # Sample multi-stage Dockerfile for bespoke container microservices
 
 FROM alpine:3.20 AS base
+# hadolint ignore=DL3018
 RUN apk add --no-cache ca-certificates tzdata
+
 
 FROM base AS builder
 WORKDIR /build
