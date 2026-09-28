@@ -1,0 +1,31 @@
+---
+# ==============================================================================
+# Docker Compose Stack Specification
+# Adheres to Homelab Systems Lifecycle (HSL) Container Deployment Standards
+# ==============================================================================
+
+services:
+  app:
+    image: caddy:2.8-alpine
+    container_name: sample-app
+    restart: unless-stopped
+    ports:
+      - "${SERVICE_HTTP_PORT:-8080}:80"
+    environment:
+      - APP_ENV=${APP_ENV:-dev}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      # Read-only configuration template mount
+      - ./config/sample.conf:/etc/sample.conf:ro
+      # Dynamic persistent runtime state mount (Mirrored under /opt/.../data/)
+      - sample_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  sample_data:
+    driver: local

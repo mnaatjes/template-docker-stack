@@ -1,0 +1,50 @@
+---
+name: "Stack Quality & Security CI"
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: "read"
+
+jobs:
+  lint:
+    name: "Lint & Validate Stack"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout Repository"
+        uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+
+      - name: "Validate YAML Formatting (yamllint)"
+        uses: "ibiqlik/action-yamllint@v3"
+        with:
+          file_or_dir: "."
+          config_data: |
+            extends: default
+            rules:
+              line-length:
+                max: 160
+                level: warning
+              document-start: disable
+
+      - name: "Lint Dockerfile (hadolint)"
+        uses: "hadolint/hadolint-action@v3.1.0"
+        with:
+          dockerfile: "Dockerfile"
+          failure-threshold: "warning"
+
+      - name: "Validate Compose Specification"
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+
+      - name: "Scan for Secret Leaks (gitleaks)"
+        uses: "gitleaks/gitleaks-action@v2"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
