@@ -11,6 +11,11 @@ backups/
 *.log
 logs/
 
-# Operating system artifacts
+# Operating system and IDE artifacts
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

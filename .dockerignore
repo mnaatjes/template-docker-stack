@@ -1,0 +1,28 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Runtime and persistent host storage
+data/
+backups/
+logs/
+*.log
+
+# Documentation and operational specs
+README.md
+docs/
+architecture/
+
+# Editor and OS artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
