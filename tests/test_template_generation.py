@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
+
 import copier
-import pytest
 
 
 def test_generate_standalone_service(tmp_path: Path):
@@ -76,4 +76,3 @@ def test_generate_orchestrated_stack(tmp_path: Path):
         ["docker", "compose", "-f", str(target / "compose.yml"), "config", "--quiet"],
         check=True,
     )
-
