@@ -1,0 +1,22 @@
+---
+title: "Deploy {{ stack_name }} Locally"
+tags: ["how-to", "docker", "local", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Deploy {{ stack_name }} Locally
+
+Practical runbook for running `{{ stack_name }}` on developer workstations.
+
+## Prerequisites
+
+* Docker Engine 24+ & Docker Compose v2.
+* Port `{{ service_http_port }}` available on host.
+
+## Commands
+
+```bash
+cp .env.example .env
+docker compose up -d
+docker compose ps
+```

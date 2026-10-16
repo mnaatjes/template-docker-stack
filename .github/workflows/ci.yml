@@ -1,5 +1,5 @@
 ---
-name: "Stack Quality & Security CI"
+name: "Template Quality & Generation CI"
 
 on:
   push:
@@ -12,39 +12,31 @@ permissions:
   contents: "read"
 
 jobs:
-  lint:
-    name: "Lint & Validate Stack"
+  test-template:
+    name: "Test Copier Template Generation"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout Repository"
         uses: "actions/checkout@v4"
-        with:
-          fetch-depth: 0
 
-      - name: "Validate YAML Formatting (yamllint)"
-        uses: "ibiqlik/action-yamllint@v3"
+      - name: "Set up Python"
+        uses: "actions/setup-python@v5"
         with:
-          file_or_dir: "."
-          config_data: |
-            extends: default
-            rules:
-              line-length:
-                max: 160
-                level: warning
-              document-start: disable
+          python-version: "3.12"
 
-      - name: "Lint Dockerfile (hadolint)"
-        uses: "hadolint/hadolint-action@v3.1.0"
+      - name: "Install uv"
+        uses: "astral-sh/setup-uv@v3"
         with:
-          dockerfile: "Dockerfile"
-          failure-threshold: "warning"
+          enable-cache: false
 
-      - name: "Validate Compose Specification"
+      - name: "Install Dependencies"
         run: |
-          cp .env.example .env
-          docker compose config --quiet
+          uv sync --all-extras
 
-      - name: "Scan for Secret Leaks (gitleaks)"
-        uses: "gitleaks/gitleaks-action@v2"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Run Linters (pre-commit)"
+        run: |
+          uv run pre-commit run --all-files
+
+      - name: "Run Pytest Template Suite"
+        run: |
+          uv run pytest -v

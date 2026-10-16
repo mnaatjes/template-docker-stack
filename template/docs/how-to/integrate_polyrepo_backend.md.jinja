@@ -1,0 +1,43 @@
+---
+title: "Integrate Polyrepo Backend Container Image"
+tags: ["how-to", "polyrepo", "backend", "docker", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Integrate Polyrepo Backend Container Image
+
+This runbook documents how to connect an independently developed backend service repository (e.g. authored via `python-hexagonal-template`) into `{{ stack_name }}`.
+
+## 1. Upstream Backend Release Contract
+
+The upstream backend repository must:
+1. Compile and publish an OCI container image to GitHub Container Registry:
+   `{{ image_registry_namespace }}/{{ stack_name }}-api:vX.Y.Z`
+2. Expose internal port `8000` (or configured API port).
+3. Provide a `/health` endpoint validating database and application readiness.
+
+## 2. Compose Wiring in {{ stack_name }}
+
+In `compose.yml`:
+```yaml
+services:
+  backend:
+    image: ${BACKEND_IMAGE:-{{ image_registry_namespace }}/{{ stack_name }}-api:latest}
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${APP_ENV:-dev}
+      - PORT=8000
+    volumes:
+      - "${DATA_DIR:-./data}:/app/data"
+    networks:
+      - {{ stack_name | replace('-', '_') }}_net
+```
+
+## 3. Reverse Proxy Proxying
+
+Frontend Nginx receives external client requests and forwards `/api/` calls across the internal Docker bridge network:
+```nginx
+location /api/ {
+    proxy_pass http://backend:8000;
+}
+```
