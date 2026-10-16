@@ -1,0 +1,16 @@
+---
+status: "accepted"
+date: "{{ '%Y-%m-%d' | strftime }}"
+deciders: ["@mnaatjes"]
+tags: ["docker", "compose", "architecture", "adr"]
+---
+
+# 0001: Adopt Containerized Deployment Architecture for {{ stack_name }}
+
+## Context and Problem Statement
+
+The platform requires a reliable containerized workload specification for `{{ stack_name }}` complying with the Homelab Systems Lifecycle (HSL).
+
+## Decision Outcome
+
+Chosen option: Deploy `{{ stack_name }}` via Docker Compose governed by Ansible orchestrator, isolating persistent state to `${DATA_DIR}` and pulling pre-compiled images from registry.

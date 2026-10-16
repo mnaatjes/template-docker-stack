@@ -1,0 +1,20 @@
+---
+title: "Architecture Overview for {{ stack_name }}"
+tags: ["explanation", "architecture", "hsl", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Architecture Overview for {{ stack_name }}
+
+This document explains the runtime container topology, volume persistence model, and network boundaries governing `{{ stack_name }}`.
+
+## 1. Homelab Systems Lifecycle (HSL) Boundary
+
+`{{ stack_name }}` operates under strict HSL separation:
+* **Declarative Configuration:** Maintained in Git and synchronized to `/opt/homelab/prod/compose/{{ stack_name }}/`.
+* **State Persistence:** Preserved under `/opt/homelab/prod/data/{{ stack_name }}/` with host-managed permissions.
+* **Pre-Built OCI Images:** Worker nodes pull pre-compiled container packages from registries without local compilers.
+
+## 2. Ingress & Reverse Proxying
+
+Client traffic enters via the host network on `${SERVICE_HTTP_PORT:-{{ service_http_port }}}`. All internal container communication is strictly encapsulated within the Docker bridge network.

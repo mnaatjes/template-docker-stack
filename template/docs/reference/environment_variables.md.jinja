@@ -1,0 +1,16 @@
+---
+title: "Environment Variables Reference for {{ stack_name }}"
+tags: ["reference", "environment", "configuration", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Environment Variables Reference for {{ stack_name }}
+
+Authoritative specification of configuration options for `{{ stack_name }}`.
+
+| Variable | Default | Description | Environment |
+| :--- | :--- | :--- | :--- |
+| `APP_ENV` | `dev` | Application lifecycle mode (`dev`, `stage`, `prod`). | All |
+| `SERVICE_HTTP_PORT` | `{{ service_http_port }}` | Ingress port exposed on the host. | All |
+| `DATA_DIR` | `./data` | Persistent host bind path (overridden by Ansible in prod). | All |
+| `LOG_LEVEL` | `info` | Operational logging verbosity (`debug`, `info`, `warn`, `error`). | All |

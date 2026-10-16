@@ -1,0 +1,40 @@
+---
+title: "Integrate Polyrepo Frontend SPA Container Image"
+tags: ["how-to", "polyrepo", "frontend", "docker", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Integrate Polyrepo Frontend SPA Container Image
+
+This runbook documents how to connect an independently developed frontend repository (e.g. Vue 3 / Vite SPA) into `{{ stack_name }}`.
+
+## 1. Upstream Frontend Release Contract
+
+The upstream frontend repository must:
+1. Compile and publish an OCI container image running an embedded Nginx webserver:
+   `{{ image_registry_namespace }}/{{ stack_name }}-ui:vX.Y.Z`
+2. Serve static single-page application assets at `/usr/share/nginx/html`.
+3. Read reverse-proxy configuration from mounted `/etc/nginx/conf.d/default.conf`.
+
+## 2. Compose Wiring in {{ stack_name }}
+
+In `compose.yml`:
+```yaml
+services:
+  frontend:
+    image: ${FRONTEND_IMAGE:-{{ image_registry_namespace }}/{{ stack_name }}-ui:latest}
+    restart: unless-stopped
+    ports:
+      - "${SERVICE_HTTP_PORT:-{{ service_http_port }}}}:80"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - {{ stack_name | replace('-', '_') }}_net
+```
+
+## 3. Alternative Edge CDN Routing
+
+Because the frontend is decoupled into its own repository, operators may optionally deploy the SPA directly to Cloudflare Pages or Netlify instead of hosting the container locally on the homelab fleet.

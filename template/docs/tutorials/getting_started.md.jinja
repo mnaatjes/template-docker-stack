@@ -1,0 +1,16 @@
+---
+title: "Getting Started with {{ stack_name }}"
+tags: ["tutorial", "onboarding", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Getting Started with {{ stack_name }}
+
+This tutorial walks through spinning up `{{ stack_name }}` in local development.
+
+## Steps
+
+1. Copy `.env.example` to `.env`.
+2. Inspect `SERVICE_HTTP_PORT` (defaults to `{{ service_http_port }}`).
+3. Launch with `docker compose up -d`.
+4. Validate service health at `http://localhost:{{ service_http_port }}`.

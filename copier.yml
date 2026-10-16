@@ -1,0 +1,51 @@
+---
+_min_copier_version: "9.0.0"
+_subdirectory: "template"
+_answers_file: ".copier-answers.yml"
+
+stack_name:
+  type: str
+  help: "Lowercase kebab-case stack name (e.g. openobserve, custom-service)"
+  validator: >-
+    {% if not stack_name | regex_search('^[a-z0-9]+(-[a-z0-9]+)*$') %}
+    stack_name must be lowercase alphanumeric with hyphens (kebab-case).
+    {% endif %}
+
+stack_description:
+  type: str
+  help: "Brief description of the service and its purpose"
+  default: "Homelab container service stack"
+
+stack_type:
+  type: str
+  help: "Select the architectural archetype for this stack"
+  choices:
+    - "standalone_service"
+    - "orchestrated_stack"
+  default: "standalone_service"
+
+service_http_port:
+  type: int
+  help: "Default external HTTP host port for ingress"
+  default: 8080
+
+image_registry_namespace:
+  type: str
+  help: "Container registry namespace for published images"
+  default: "ghcr.io/mnaatjes"
+
+include_architecture_scaffold:
+  type: bool
+  help: "Scaffold full Unified Process architecture/ tree (ADR, SDD, Use Cases)?"
+  default: true
+
+include_diataxis_docs:
+  type: bool
+  help: "Scaffold 4-quadrant Diataxis docs/ tree (tutorials, how-to, reference, explanation)?"
+  default: true
+
+# Conditional exclusions based on operator choices
+_exclude:
+  - "{% if stack_type != 'orchestrated_stack' %}config/nginx.conf{% endif %}"
+  - "{% if not include_architecture_scaffold %}architecture/**{% endif %}"
+  - "{% if not include_diataxis_docs %}docs/**{% endif %}"

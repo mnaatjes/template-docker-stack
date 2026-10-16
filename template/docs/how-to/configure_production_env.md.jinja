@@ -1,0 +1,30 @@
+---
+title: "Configure Production Environment for {{ stack_name }}"
+tags: ["how-to", "production", "ansible", "hsl", "{{ stack_name }}"]
+created_at: "{{ '%Y-%m-%d' | strftime }}"
+---
+
+# Configure Production Environment for {{ stack_name }}
+
+Runbook for onboarding `{{ stack_name }}` into `homelab-ops` Ansible automation.
+
+## 1. Register Stack in Workload Inventory
+
+In `homelab-ops/group_vars/all/workloads/compose_stacks.yml`:
+
+```yaml
+compose_stacks:
+  {{ stack_name }}:
+    repo_url: "https://github.com/{{ image_registry_namespace | replace('ghcr.io/', '') }}/{{ stack_name }}.git"
+    version: "v1.0.0"
+    target_hosts: ["prd-worker-01.lan"]
+    environment_variables:
+      SERVICE_HTTP_PORT: {{ service_http_port }}
+      DATA_DIR: "/opt/homelab/prod/data/{{ stack_name }}"
+```
+
+## 2. Converge Fleet Node
+
+```bash
+ansible-playbook -i inventory.ini playbooks/deploy_stack.yml -e "stack={{ stack_name }}"
+```
