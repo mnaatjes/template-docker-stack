@@ -1,6 +1,6 @@
 [project]
 name = "template-docker-stack"
-version = "0.1.0"
+version = "0.2.0"
 description = "Canonical Copier template for HSL-compliant Docker Compose stacks"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,7 +19,7 @@ dev = [
 ]
 
 [tool.bumpversion]
-current_version = "0.1.0"
+current_version = "0.2.0"
 commit = true
 tag = true
 tag_name = "v{new_version}"
