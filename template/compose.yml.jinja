@@ -51,7 +51,7 @@ services:
 networks:
   {{ stack_name | replace('-', '_') }}_net:
     driver: bridge
-{% else %}
+{%- else %}
 services:
   app:
     image: ${APP_IMAGE:-caddy:2.8-alpine}
@@ -73,4 +73,4 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-{% endif %}
+{%- endif %}
